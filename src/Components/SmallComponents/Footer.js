@@ -7,6 +7,7 @@ function Footer() {
             style={{
                 backgroundColor: '#24231D',
                 color: '#FFFFFF', // Ensures text is visible on dark background
+                fontFamily: 'Inter, sans-serif' // Change default font for the footer
             }}
         >
             <div className="row">
@@ -17,7 +18,7 @@ function Footer() {
                         alt="Logo"
                         style={{ width: '100px', marginBottom: '15px' }}
                     />
-                    <p>
+                    <p style={{ fontFamily: 'Exo, sans-serif' }}>
                         A brief description about the company or organization.
                         Providing insight into your mission or vision.
                     </p>
@@ -52,7 +53,7 @@ function Footer() {
 
                 {/* Column 2: Navigation */}
                 <div className="col-lg-3 col-md-6 text-start">
-                    <h5>Navigation</h5>
+                    <h5 style={{ fontFamily: 'Exo, sans-serif' }}>Navigation</h5>
                     <ul className="list-unstyled">
                         <li>
                             <a href="/home" style={{ textDecoration: 'none', color: '#FFFFFF' }}>
@@ -79,7 +80,7 @@ function Footer() {
 
                 {/* Column 3: News */}
                 <div className="col-lg-3 col-md-6 text-start">
-                    <h5>News</h5>
+                    <h5 style={{ fontFamily: 'Exo, sans-serif' }}>News</h5>
                     <ul className="list-unstyled">
                         <li>
                             <a href="/news/1" style={{ textDecoration: 'none', color: '#FFFFFF' }}>
@@ -101,28 +102,32 @@ function Footer() {
 
                 {/* Column 4: Contact Info */}
                 <div className="col-lg-3 col-md-6 text-start">
-                    <h5>Contact Us</h5>
+                    <h5 style={{ fontFamily: 'Exo, sans-serif' }}>Contact Us</h5>
                     <p>
                         <i className="fas fa-phone"></i>{' '}
-                        <a href="tel:+1234567890" style={{ textDecoration: 'none', color: '#FFFFFF' }}>
-                            +1234567890
+                        <a
+                            href="tel:+918830385928" // Link to dial the phone number
+                            style={{ textDecoration: 'none', color: '#FFFFFF' }}>
+                            +91 883 038 5928
                         </a>
                     </p>
                     <p>
                         <i className="fas fa-envelope"></i>{' '}
-                        <a href="mailto:info@example.com" style={{ textDecoration: 'none', color: '#FFFFFF' }}>
-                            info@example.com
+                        <a
+                            href="mailto:info@kisaanstar.com" // Link to email
+                            style={{ textDecoration: 'none', color: '#FFFFFF' }}>
+                            info@kisaanstar.com
                         </a>
                     </p>
                     <p>
                         <i className="fas fa-map-marker-alt"></i>{' '}
                         <a
-                            href="https://maps.google.com?q=123+Main+St,+City,+Country"
+                            href="https://www.google.com/maps/search/?api=1&query=Wagholi,+Pune,+Maharashtra+412207"
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ textDecoration: 'none', color: '#FFFFFF' }}
                         >
-                            123 Main St, City, Country
+                            4th floor, office number 401, Vishwaraj Pride, Nagar Rd, near hp petrol pump, Wagholi, Pune, Maharashtra 412207
                         </a>
                     </p>
                 </div>

@@ -6,6 +6,9 @@ import Registration from './Pages/Registration'; // Include this if you have a R
 import Home from './Pages/Home'; // Example: a home component
 import About from './Pages/About';
 import Services from './Pages/Services';
+import Products from './Pages/Products';
+import Contactus from './Pages/Contactus';
+import ViewProfile from './Pages/ViewProfile';
 
 function App() {
   return (
@@ -16,6 +19,9 @@ function App() {
         <Route path="/register" element={<Registration />} /> {/* Optional for registration */}
         <Route path="/About" element={<About />} />
         <Route path="/Services" element={<Services />} />
+        <Route path="/Products" element={<Products />} />
+        <Route path="/Contactus" element={<Contactus />} />
+        <Route path="/profile" element={<ViewProfile />} />
       </Routes>
     </Router>
   );

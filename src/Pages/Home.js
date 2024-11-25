@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';  // Add missing imports
+import React, { useState, useEffect } from 'react';  
 import { Typography, Button, Box, Grid, Container as MuiContainer } from '@mui/material'; 
 import Hero from '../Assets/Background/Home.png'; 
 import Headerbar from '../Components/SmallComponents/Headerbar';
@@ -27,41 +27,41 @@ function IconBox({ icon, title, description }) {
     );
 }
 
-// Counter Component with Circular Progress
+// Counter Component
 const Counter = ({ title, targetNumber, percentage, color }) => {
     const [currentNumber, setCurrentNumber] = useState(0);
 
     useEffect(() => {
-        const duration = 2000; // Animation duration in milliseconds
-        const incrementTime = 50; // Time interval for each increment in milliseconds
-        const totalSteps = duration / incrementTime; // Total number of steps
-        const incrementValue = Math.ceil(targetNumber / totalSteps); // Value to increment at each step
+        const duration = 2000; 
+        const incrementTime = 50; 
+        const totalSteps = duration / incrementTime; 
+        const incrementValue = Math.ceil(targetNumber / totalSteps); 
 
         let count = 0;
         const interval = setInterval(() => {
             count += incrementValue;
             if (count >= targetNumber) {
                 clearInterval(interval);
-                count = targetNumber; // Ensure it ends on targetNumber
+                count = targetNumber; 
             }
             setCurrentNumber(count);
         }, incrementTime);
 
-        return () => clearInterval(interval); // Cleanup on unmount
+        return () => clearInterval(interval); 
     }, [targetNumber]);
 
     // Calculate circle properties
-    const circleSize = 150; // Size of the circle
-    const strokeWidth = 15; // Width of the circle's stroke
-    const radius = (circleSize - strokeWidth) / 2; // Radius of the circle
-    const circumference = 2 * Math.PI * radius; // Circumference of the circle
-    const offset = circumference - (percentage / 100) * circumference; // Offset for stroke-dasharray
+    const circleSize = 150; 
+    const strokeWidth = 15; 
+    const radius = (circleSize - strokeWidth) / 2; 
+    const circumference = 2 * Math.PI * radius; 
+    const offset = circumference - (percentage / 100) * circumference; 
 
     return (
         <Box textAlign="center" position="relative" marginBottom={4}>
             <svg width={circleSize} height={circleSize}>
                 <circle
-                    stroke="#e6e6e6" // Grey background
+                    stroke="#e6e6e6" 
                     fill="transparent"
                     strokeWidth={strokeWidth}
                     r={radius}
@@ -69,7 +69,7 @@ const Counter = ({ title, targetNumber, percentage, color }) => {
                     cy={circleSize / 2}
                 />
                 <circle
-                    stroke={color} // Color of the progress circle
+                    stroke={color} 
                     fill="transparent"
                     strokeWidth={strokeWidth}
                     strokeDasharray={circumference}
@@ -80,7 +80,6 @@ const Counter = ({ title, targetNumber, percentage, color }) => {
                     style={{ transition: 'stroke-dashoffset 0.5s ease-in-out' }}
                 />
             </svg>
-            {/* Display the count in the center of the circle */}
             <Typography variant="h4" style={{ color, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
                 {currentNumber}
             </Typography>
@@ -97,6 +96,7 @@ const buttonStyles = {
     },
 };
 
+// Column Style
 const columnStyle = {
     backgroundImage: `url(${Hero})`, 
     backgroundSize: 'cover',
@@ -104,10 +104,11 @@ const columnStyle = {
     color: '#000',
     borderRadius: '10px',
     padding: '20px',
-    margin: '20px',
+    margin: '10px',
     minHeight: '250px',
 };
 
+// Text Container Style
 const textContainerStyle = {
     position: 'absolute',
     top: '50%',
@@ -118,19 +119,20 @@ const textContainerStyle = {
 };
 
 function Home() {
+    // Added a wrapper with overflow hidden to prevent horizontal scrolling
     return (
-        <>
+        <div style={{ overflowX: 'hidden', margin: '0' }}> 
             <Headerbar />
             <Header />
 
             {/* Desktop Version */}
             <div className="d-none d-md-block">
-                <div className="position-relative" style={{ overflow: 'hidden' }}>
+                <div className="position-relative">
                     <img
                         src={Hero}
                         alt="Hero Background"
                         className="img-fluid w-100"
-                        style={{ height: 'auto', maxHeight: '700px', objectFit: 'cover' }}
+                        style={{ maxHeight: '700px', objectFit: 'cover' }}
                     />
                     <div className="position-absolute top-50 start-0" style={{ zIndex: 1 }}>
                         <div style={{ transform: 'translateY(-50%)', paddingLeft: '20px' }}>
@@ -173,17 +175,18 @@ function Home() {
                         padding: '20px',
                         backgroundColor: 'white',
                         borderRadius: '8px',
-                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                        overflowX: 'hidden' // Prevent overflow here as well
                     }}
                 >
                     <Row className="justify-content-center">
-                        <Col>
+                        <Col xs={12} md={4}>
                             <IconBox icon={<HomeIcon fontSize="large" />} title="Home" description="Your cozy space." />
                         </Col>
-                        <Col>
+                        <Col xs={12} md={4}>
                             <IconBox icon={<InfoIcon fontSize="large" />} title="Information" description="Stay informed and updated." />
                         </Col>
-                        <Col>
+                        <Col xs={12} md={4}>
                             <IconBox icon={<CheckIcon fontSize="large" />} title="Success" description="Achieve your goals." />
                         </Col>
                     </Row>
@@ -192,12 +195,12 @@ function Home() {
 
             {/* Mobile Version */}
             <div className="d-block d-md-none">
-                <div className="position-relative" style={{ overflow: 'hidden' }}>
+                <div className="position-relative">
                     <img
                         src={Hero}
                         alt="Hero Background"
                         className="img-fluid w-100"
-                        style={{ height: 'auto', maxHeight: '435px', objectFit: 'cover' }}
+                        style={{ maxHeight: '435px', objectFit: 'cover' }}
                     />
                     <div style={textContainerStyle}>
                         <h1>Your Mobile Heading Here</h1>
@@ -207,7 +210,6 @@ function Home() {
                     </div>
                 </div>
 
-                {/* Mobile Icon Container */}
                 <MuiContainer
                     style={{
                         maxWidth: '90%',
@@ -215,17 +217,18 @@ function Home() {
                         padding: '20px',
                         backgroundColor: 'white',
                         borderRadius: '8px',
-                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                        overflowX: 'hidden' // Prevent overflow here as well
                     }}
                 >
                     <Row className="justify-content-center">
-                        <Col>
+                        <Col xs={12} md={4}>
                             <IconBox icon={<HomeIcon fontSize="large" />} title="Home" description="Your cozy space." />
                         </Col>
-                        <Col>
+                        <Col xs={12} md={4}>
                             <IconBox icon={<InfoIcon fontSize="large" />} title="Information" description="Stay informed and updated." />
                         </Col>
-                        <Col>
+                        <Col xs={12} md={4}>
                             <IconBox icon={<CheckIcon fontSize="large" />} title="Success" description="Achieve your goals." />
                         </Col>
                     </Row>
@@ -233,7 +236,7 @@ function Home() {
             </div>
 
             {/* Products and Other Content */}
-            <div style={{ padding: '40px 0' }}>
+            <div style={{ padding: '50px 0' }}>
                 <ProductList />
             </div>
 
@@ -256,7 +259,7 @@ function Home() {
                 </Grid>
             </MuiContainer>
 
-            <div className="container text-center">
+            <div className="container text-center" style={{ overflowX: 'hidden' }}> 
                 <div className="row">
                     <div className="col" style={columnStyle}>
                         <div style={{ textAlign: 'left' }}>
@@ -283,14 +286,14 @@ function Home() {
                 <ProductSlider />
             </div>
 
-            <MuiContainer className="text-center" style={{ paddingTop: '20px' }}>
+            <MuiContainer className="text-center" style={{ paddingTop: '20px', overflowX: 'hidden' }}> 
                 <Row>
                     <Col>
                         <img
                             src={Hero}
                             alt="Description of the image"
                             className="img-fluid"
-                            style={{ maxHeight: '300px', objectFit: 'cover' }}
+                            style={{ maxHeight: '300px', objectFit: 'cover', width: '100%' }} 
                         />
                     </Col>
 
@@ -299,7 +302,7 @@ function Home() {
                         <h2>Your Heading Here</h2>
                         <p>Your description goes here. Give a brief and meaningful context about your content.</p>
                         <div className="d-flex justify-content-around mt-4">
-                            <Card className="text-center" style={{ width: 'calc(50% - 20px)' }}>
+                            <Card className="text-center" style={{ width: 'calc(50% - 20px)', maxWidth: '400px' }}>
                                 <Card.Body>
                                     <Card.Text>
                                         <IconBox
@@ -310,7 +313,7 @@ function Home() {
                                     </Card.Text>
                                 </Card.Body>
                             </Card>
-                            <Card className="text-center" style={{ width: 'calc(50% - 20px)' }}>
+                            <Card className="text-center" style={{ width: 'calc(50% - 20px)', maxWidth: '400px' }}>
                                 <Card.Body>
                                     <Card.Text>
                                         <IconBox
@@ -360,7 +363,7 @@ function Home() {
                 <Footer />
                 <Footerbar />
             </div>
-        </>
+        </div>
     );
 }
 
