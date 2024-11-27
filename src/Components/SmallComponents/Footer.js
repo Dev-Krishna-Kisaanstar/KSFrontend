@@ -1,11 +1,12 @@
 import React from 'react';
+import logo from '../../Assets/Logo/Kisaanstarlogo1.webp'
 
 function Footer() {
     return (
         <div
             className="container-fluid text-center py-4"
             style={{
-                backgroundColor: '#24231D',
+                backgroundColor: '#4BAF47',
                 color: '#FFFFFF', // Ensures text is visible on dark background
                 fontFamily: 'Inter, sans-serif' // Change default font for the footer
             }}
@@ -14,9 +15,9 @@ function Footer() {
                 {/* Column 1: Logo, Description, Social Media */}
                 <div className="col-lg-3 col-md-6 text-start">
                     <img
-                        src="https://via.placeholder.com/150"
+                        src={logo}
                         alt="Logo"
-                        style={{ width: '100px', marginBottom: '15px' }}
+                        style={{ width: '200px', marginBottom: '15px',borderRadius:'30px' }}
                     />
                     <p style={{ fontFamily: 'Exo, sans-serif' }}>
                         A brief description about the company or organization.

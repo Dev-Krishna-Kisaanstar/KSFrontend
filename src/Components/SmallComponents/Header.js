@@ -1,117 +1,135 @@
-import React from 'react'; 
-import { Link, useNavigate } from 'react-router-dom'; 
-import { IconButton, Menu, MenuItem } from '@mui/material'; 
-import SearchIcon from '@mui/icons-material/Search'; 
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'; 
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; 
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import logo from '../../Assets/Logo/Kisaanstarlogo1.webp';
+import axios from 'axios';
 import Cookies from 'js-cookie';
 
 function Header() {
-  const navigate = useNavigate(); 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+    const navigate = useNavigate(); 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isLoggedIn = Boolean(Cookies.get('token')); 
+    useEffect(() => {
+        // Check if the user is logged in by checking for a session cookie
+        const token = Cookies.get('customerSession');
+        setIsLoggedIn(!!token); // Set logged in state based on the presence of a token
+    }, []);
 
-  // Accessing the API URL from environment variables
-  const apiUrl = process.env.REACT_APP_API_URL;
+    const handleProfileMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    const handleProfileMenuClose = () => {
+        setAnchorEl(null);
+    };
 
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
+    const logout = async () => {
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/customers/logout`, {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            });
+            if (response.status === 200) {
+                // Clear the session cookie
+                Cookies.remove('customerSession');
+                setIsLoggedIn(false); // Update local state
+                navigate('/'); // Redirect to home or wherever you like after logging out
+            }
+        } catch (error) {
+            console.error('Logout failed:', error.response ? error.response.data : 'Server error');
+            // Handle any logout error, e.g., show a message to the user
+        }
+    };
 
-  const handleLogout = () => {
-    Cookies.remove('token'); // Remove the token from the cookies
-    handleProfileMenuClose();
-    navigate('/'); // Redirect to home page after logout
-  };
-
-  return (
-    <nav className="navbar navbar-expand-lg" style={{ backgroundColor: '#e3f2fd', padding: '0 10px' }}>
-      <div className="container-fluid">
-        {/* Logo */}
-        <Link className="navbar-brand" to="/">
-          <img src={logo} alt="Logo" style={{ height: '60px', borderRadius: '20px' }} />
-        </Link>
-
-        <button 
-          className="navbar-toggler" 
-          type="button" 
-          data-bs-toggle="collapse" 
-          data-bs-target="#navbarSupportedContent" 
-          aria-controls="navbarSupportedContent" 
-          aria-expanded="false" 
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
-          {/* Navigation Links */}
-          <ul className="navbar-nav mb-2 mb-lg-0">
-            <li className="nav-item">
-              <Link className="nav-link active" aria-current="page" to="/" style={{ fontFamily: 'Inter, sans-serif' }}>Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/About" style={{ fontFamily: 'Inter, sans-serif' }}>About Us</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/Services" style={{ fontFamily: 'Inter, sans-serif' }}>Services</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/Products" style={{ fontFamily: 'Inter, sans-serif' }}>Products</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/Contactus" style={{ fontFamily: 'Inter, sans-serif' }}>Contact Us</Link>
-            </li>
-            {/* Show Login button when not logged in */}
-            {!isLoggedIn && (
-              <li className="nav-item">
-                <Link className="btn nav-link" to="/login" style={{ fontFamily: 'Inter, sans-serif' }}>Login</Link>
-              </li>
-            )}
-          </ul>
-          {/* Search and Cart Icons */}
-          <div className="d-flex align-items-center">
-            <IconButton color="inherit" sx={{ fontFamily: 'Inter, sans-serif' }}>
-              <SearchIcon />
-            </IconButton>
-            <IconButton color="inherit" sx={{ fontFamily: 'Inter, sans-serif' }}>
-              <ShoppingCartIcon />
-            </IconButton>
-            {/* Profile Icon always visible */}
-            <div>
-              <IconButton 
-                color="inherit" 
-                onClick={handleProfileMenuOpen}
-                sx={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                <AccountCircleIcon />
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleProfileMenuClose}
-              >
-                {isLoggedIn ? (
-                  <>
-                    <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/profile'); }}>View Profile</MenuItem>
-                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                  </>
-                ) : (
-                  <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/login'); }}>Login</MenuItem>
-                )}
-              </Menu>
+    return (
+        <nav className="navbar navbar-expand-lg" style={{ 
+            backgroundColor: '#4BAF47', 
+            padding: '0 10px', 
+            borderTop: '2px solid white' // Added top border in white color
+        }}>
+            <div className="container-fluid">
+                <Link className="navbar-brand" to="/">
+                    <img src={logo} alt="Logo" style={{ height: '60px', borderRadius: '20px' }} />
+                </Link>
+                <button 
+                    className="navbar-toggler" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#navbarSupportedContent" 
+                    aria-controls="navbarSupportedContent" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                    <ul className="navbar-nav mb-2 mb-lg-0">
+                        <li className="nav-item">
+                            <Link className="nav-link active text-white fw-bold" aria-current="page" to="/">Home</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link text-white fw-bold" to="/About">About Us</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link text-white fw-bold" to="/Services">Services</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link text-white fw-bold" to="/Products">Products</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link text-white fw-bold" to="/Contactus">Contact Us</Link>
+                        </li>
+                        {!isLoggedIn && (
+                            <li className="nav-item">
+                                <Link className="btn nav-link text-white fw-bold" to="/login">Login</Link>
+                            </li>
+                        )}
+                    </ul>
+                    <div className="d-flex align-items-center">
+                        <IconButton color="inherit">
+                            <SearchIcon style={{ color: 'white' }} />
+                        </IconButton>
+                        <IconButton color="inherit">
+                            <ShoppingCartIcon style={{ color: 'white' }} />
+                        </IconButton>
+                        <div>
+                            <IconButton 
+                                color="inherit" 
+                                onClick={handleProfileMenuOpen}
+                            >
+                                <AccountCircleIcon style={{ color: 'white' }} />
+                            </IconButton>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleProfileMenuClose}>
+                                {isLoggedIn ? (
+                                    <>
+                                        <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/profile'); }} className="fw-bold">
+                                            View Profile
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleProfileMenuClose(); logout(); }} className="fw-bold">
+                                            Logout
+                                        </MenuItem>
+                                    </>
+                                ) : (
+                                    <MenuItem onClick={() => { handleProfileMenuClose(); navigate('/login'); }} className="fw-bold">
+                                        Login
+                                    </MenuItem>
+                                )}
+                            </Menu>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
+        </nav>
+    );
 }
 
 export default Header;

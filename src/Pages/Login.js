@@ -1,226 +1,174 @@
 import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
-import './Login.css'; // Custom styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Login.css';
 import Headerbar from '../Components/SmallComponents/Headerbar';
 import Header from '../Components/SmallComponents/Header';
 import Footer from '../Components/SmallComponents/Footer';
 import Footerbar from '../Components/SmallComponents/Footerbar';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
-import Cookies from 'js-cookie'; // Import Cookies
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
-  const [isSignup, setIsSignup] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    mobileNumber: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [userName, setUserName] = useState('');
-  const navigate = useNavigate(); // Initialize navigate
-
-  // Check if the user is already logged in
-  useEffect(() => {
-    const token = Cookies.get('token');
-    const savedUserName = Cookies.get('userName');
-
-    if (token) {
-      navigate('/'); // Redirect to home if already logged in
-    }
-
-    if (savedUserName) {
-      setUserName(savedUserName); // Set user name in state
-    }
-  }, [navigate]);
-
-  const toggleForms = () => {
-    setIsSignup((prev) => !prev);
-    setFormData({
-      fullName: '',
-      mobileNumber: '',
-      password: '',
+    const [isSignup, setIsSignup] = useState(false);
+    const [formData, setFormData] = useState({
+        fullName: '',
+        mobileNumber: '',
+        password: '',
+        advisorName: '',
     });
-    setError('');
-  };
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    const endpoint = isSignup ? '/api/customers/register' : '/api/customers/login';
-    const method = 'POST';
-
-    const body = isSignup
-      ? JSON.stringify({
-          fullName: formData.fullName,
-          mobileNumber: formData.mobileNumber,
-          password: formData.password,
-        })
-      : JSON.stringify({
-          mobileNumber: formData.mobileNumber,
-          password: formData.password,
-        });
-
-    // Log the full API URL for debugging
-    const fullApiUrl = `${process.env.REACT_APP_API_URL}${endpoint}`;
-
-    try {
-      const response = await fetch(fullApiUrl, { // Use the constructed URL
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body,
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const message = isSignup ? 'User registered successfully' : 'User logged in successfully';
-        toast.success(message);
-        if (!isSignup && data.token) {
-          Cookies.set('token', data.token, { expires: 7 });
-          Cookies.set('userName', formData.fullName, { expires: 7 });
-          navigate('/');
+    useEffect(() => {
+        const token = Cookies.get('customerSession');
+        if (token) {
+            navigate('/'); // Redirect to dashboard if already logged in
         }
-      } else {
-        setError(data.message);
-        toast.error(data.message);
-      }
-    } catch (error) {
-      setError('Network error, please try again.');
-      toast.error('Network error, please try again.');
-    }
-  };
+    }, [navigate]);
 
-  const handleLogout = () => {
-    Cookies.remove('token');
-    Cookies.remove('userName');
-    navigate('/login');
-  };
+    const toggleForms = () => {
+        setIsSignup(prev => !prev);
+        setFormData({
+            fullName: '',
+            mobileNumber: '',
+            password: '',
+            advisorName: '',
+        });
+        setError('');
+    };
 
-  return (
-    <div>
-      <Headerbar />
-      <Header />
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
-      {/* Profile Icon Section */}
-      <div className="profile-icon" style={{ position: 'relative', margin: '10px' }}>
-        <img
-          src="profile_icon.png"
-          alt="Profile"
-          onClick={() => setShowProfileMenu(!showProfileMenu)}
-          style={{ cursor: 'pointer', width: '30px', height: '30px' }}
-        />
-        {showProfileMenu && (
-          <div
-            className="profile-menu"
-            style={{
-              position: 'absolute',
-              right: 0,
-              background: 'white',
-              boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-              padding: '10px',
-              borderRadius: '5px',
-              zIndex: 1000,
-            }}
-          >
-            <div style={{ marginBottom: '10px' }}>Hello, {userName || 'Guest'}</div>
-            <button className="btn btn-link text-primary" onClick={() => navigate('/profile')}>
-              View Profile
-            </button>
-            <button className="btn btn-link text-danger" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
 
-      <div className="login-global d-flex align-items-center justify-content-center vh-100">
-        <section
-          className={`login-wrapper ${isSignup ? 'active' : ''} p-5 rounded shadow bg-primary text-white`}
-        >
-          <div className="login-form signup">
-            <header onClick={toggleForms} className="mb-4 cursor-pointer">
-              {isSignup ? 'Switch to Login' : 'Switch to Signup'}
-            </header>
-            {isSignup ? (
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  className="form-control mb-3"
-                  placeholder="Full name"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="text"
-                  className="form-control mb-3"
-                  placeholder="Mobile number"
-                  name="mobileNumber"
-                  value={formData.mobileNumber}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="password"
-                  className="form-control mb-3"
-                  placeholder="Password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                {error && <div className="text-danger mb-3">{error}</div>}
-                <input type="submit" className="btn btn-light btn-block" value="Signup" />
-              </form>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  className="form-control mb-3"
-                  placeholder="Mobile number"
-                  name="mobileNumber"
-                  value={formData.mobileNumber}
-                  onChange={handleChange}
-                  required
-                />
-                <input
-                  type="password"
-                  className="form-control mb-3"
-                  placeholder="Password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                />
-                {error && <div className="text-danger mb-3">{error}</div>}
-                <a href="#" className="text-white">
-                  Forgot password?
-                </a>
-                <input type="submit" className="btn btn-light btn-block mt-3" value="Login" />
-              </form>
-            )}
-          </div>
-        </section>
-      </div>
+        const endpoint = isSignup ? '/register' : '/login';
+        const body = isSignup
+            ? {
+                fullName: formData.fullName,
+                mobileNumber: formData.mobileNumber,
+                password: formData.password,
+                advisorName: formData.advisorName || 'Registered by self',
+              }
+            : {
+                mobileNumber: formData.mobileNumber,
+                password: formData.password,
+              };
 
-      <ToastContainer />
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/customers${endpoint}`, body, {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true,
+            });
 
-      <Footer />
-      <Footerbar />
-    </div>
-  );
+            if (response.status === 201 || response.status === 200) {
+                const message = isSignup ? 'User registered successfully' : 'User logged in successfully';
+                toast.success(message);
+
+                if (!isSignup && response.data.token) {
+                    Cookies.set('customerSession', response.data.token, { expires: 1 / 12 }); // Store for approximately 2 hours
+                    navigate('/'); // Redirect to the dashboard
+                }
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || 'Network error, please try again.';
+            setError(message);
+            toast.error(message);
+        }
+    };
+
+    return (
+        <div>
+            <Headerbar />
+            <Header />
+            <div className="login-global d-flex align-items-center justify-content-center vh-100">
+                <section className={`login-wrapper ${isSignup ? 'active' : ''} p-5 rounded shadow bg-primary text-white`}>
+                    <div className="login-form">
+                        <header className="mb-4 cursor-pointer" onClick={toggleForms}>
+                            {isSignup ? 'Switch to Login' : 'Switch to Signup'}
+                        </header>
+                        <form onSubmit={handleSubmit}>
+                            {error && <div className="alert alert-danger">{error}</div>} {/* Error alert */}
+                            {isSignup && (
+                                <input
+                                    type="text"
+                                    className="form-control mb-3"
+                                    placeholder="Full name"
+                                    name="fullName"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    required
+                                    minLength={7}
+                                />
+                            )}
+                            <input
+                                type="text"
+                                className="form-control mb-3"
+                                placeholder="Mobile number"
+                                name="mobileNumber"
+                                value={formData.mobileNumber}
+                                onChange={handleChange}
+                                required
+                                pattern="\d{10}"
+                                title="Mobile number must be exactly 10 digits."
+                            />
+                            <input
+                                type="password"
+                                className="form-control mb-3"
+                                placeholder="Password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                            {isSignup && (
+                                <input
+                                    type="text"
+                                    className="form-control mb-3"
+                                    placeholder="Advisor name (Optional)"
+                                    name="advisorName"
+                                    value={formData.advisorName}
+                                    onChange={handleChange}
+                                />
+                            )}
+                            <button 
+                                type="submit"
+                                style={{
+                                    display: 'inline-flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor: '#fff',
+                                    color: '#000',
+                                    padding: '10px 20px',
+                                    borderRadius: '5px',
+                                    fontSize: '18px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.3s',
+                                    width: '100%',
+                                    outline: 'none'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
+                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                            >
+                                {isSignup ? 'Register' : 'Login'}
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+            <Footer />
+            <Footerbar />
+            <ToastContainer />
+        </div>
+    );
 }
 
 export default Login;

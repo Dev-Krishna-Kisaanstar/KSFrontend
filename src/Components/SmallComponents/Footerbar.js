@@ -5,7 +5,7 @@ function Footerbar() {
         <div
             className="container-fluid text-center py-3"
             style={{
-                backgroundColor: '#24231D',
+                backgroundColor: '#4BAF47',
                 color: '#FFFFFF',
                 fontFamily: 'Inter, sans-serif' // Set default font for the footer
             }}
