@@ -26,6 +26,8 @@ import Header from '../Components/SmallComponents/Header';
 import Footer from '../Components/SmallComponents/Footer';
 import Footerbar from '../Components/SmallComponents/Footerbar';
 import CxprofileSidebar from '../Components/CxprofileSidebar/Cxprofilesidebar';
+import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
+import advisorImage from '../Assets/Logo/callcenter.png';
 
 const ViewProfile = () => {
   const [customer, setCustomer] = useState(null);
@@ -33,6 +35,7 @@ const ViewProfile = () => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedCustomer, setUpdatedCustomer] = useState({});
+  
 
   useEffect(() => {
     fetchDashboard();
@@ -50,18 +53,41 @@ const ViewProfile = () => {
 
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/customers/dashboard`, {
+       
         withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
       });
+
+      // Assuming you want to utilize the message from response.
+      setMessage(response.data.message || '');
       setCustomer(response.data.customer);
       setUpdatedCustomer(response.data.customer);
-      setMessage('');
+      
+      // If a new token is included in the response, you might want to save it:
+      const newToken = response.data.token;
+      if (newToken) {
+          Cookies.set('customerSession', newToken); // Update token if necessary
+      }
+
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Error fetching dashboard');
+      // Handle specific status codes and set message accordingly.
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            setMessage('No token, authorization denied.');
+            break;
+          case 404:
+            setMessage('Customer not found.');
+            break;
+          default:
+            setMessage('Error fetching dashboard');
+        }
+      } else {
+        setMessage('Error fetching dashboard');
+      }
     } finally {
       setLoading(false);
     }
-  };
+};
 
   const handleEdit = () => setIsEditing(true);
 
@@ -79,7 +105,6 @@ const ViewProfile = () => {
         `${process.env.REACT_APP_API_URL}/api/customers/update`,
         updatedCustomer,
         {
-          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         }
       );
@@ -138,6 +163,34 @@ const ViewProfile = () => {
                         {customer.mobileNumber}
                       </Typography>
                     }
+                    action={
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: 15 }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <Typography
+                            variant="body2"
+                            style={{ marginLeft: 5, cursor: 'pointer' }}
+                            onClick={() => window.location.href = "tel:+918830385928"}
+                          >
+                            <b>Your dedicated relationship advisor</b>
+                          </Typography>
+                        </div>
+
+                        <a href="tel:+918830385928" style={{ textDecoration: 'none', cursor: 'pointer' }}>
+                          <img
+                            src={advisorImage}
+                            alt="Dedicated Relationship Advisor"
+                            style={{ marginTop: 5, width: 50, height: 50 }} 
+                          />
+                        </a>
+
+                        <Typography
+                          variant="body2"
+                          style={{ marginTop: 5, fontWeight: 'bold', fontSize: '1.1rem', textAlign: 'center' }} 
+                        >
+                          {customer.registeredBy === 'Registered by self' ? '' : customer.fullName}
+                        </Typography>
+                      </div>
+                    }
                     style={{ textAlign: 'center', backgroundColor: '#f5f5f5', padding: '20px' }}
                   />
                   <CardContent>
@@ -170,8 +223,8 @@ const ViewProfile = () => {
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <TextField
-                          label="Registered By"
-                          value={customer.registeredBy || ''}
+                          label="Alternate Mobile Number"
+                          value={customer.alternateMobileNumber || ''}
                           disabled
                           fullWidth
                         />
